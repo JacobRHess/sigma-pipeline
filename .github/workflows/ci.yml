@@ -26,13 +26,22 @@ jobs:
       - name: install
         run: |
           python -m pip install --upgrade pip
-          pip install -e .[dev]
+          pip install -e .[dev,strict]
 
       - name: lint Sigma rules
         run: sigma lint rules/
 
+      - name: lint Sigma rules (strict / pySigma advisory)
+        # Strict mode runs pySigma's validators alongside ours. Findings are
+        # warnings, not errors, so this won't break the build — it surfaces
+        # spec-compliance gaps for future improvement.
+        run: sigma lint rules/ --strict
+
       - name: test rules against fixtures
         run: sigma test rules/ --fixtures tests/fixtures
+
+      - name: pytest
+        run: pytest -q
 
       - name: ruff
         run: ruff check src/

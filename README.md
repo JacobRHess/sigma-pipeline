@@ -1,26 +1,34 @@
 # sigma-pipeline
 
-Detection-as-code CI/CD for [Sigma](https://github.com/SigmaHQ/sigma) rules. Lints, tests against fixture logs, and deploys to Splunk via the REST API.
+Fixture-driven testing for [Sigma](https://github.com/SigmaHQ/sigma) detection rules. Each rule ships with example events it should and should not match — a regression breaks the build the same way a unit-test failure does.
 
 ```bash
 sigma lint     rules/
 sigma test     rules/ --fixtures tests/fixtures
+sigma diff     rules/ ../old-rules/        # what changed in our coverage?
 sigma coverage rules/ --format navigator --output coverage.json
 sigma deploy   rules/ --host splunk.example.com --target-index main
 ```
 
-Built on top of [splunk-sigma](https://github.com/JacobRHess/splunk-sigma), which provides the rule-evaluation engine.
+Built on top of [splunk-sigma](https://github.com/JacobRHess/splunk-sigma) (the rule-evaluation engine) and optionally [`pySigma`](https://github.com/SigmaHQ/pySigma) (additional validators in `--strict` mode).
 
 ---
 
 ## Why this exists
 
-Standard CI/CD checks code quality. Detection content needs its own checks: does the rule actually catch what it claims to, and does it stay quiet on benign activity? `sigma-pipeline` adds three Sigma-specific stages to a normal pipeline:
+Detection rules don't have unit tests.
+
+Most teams treat Sigma rules as configuration: someone writes the YAML, it gets deployed, and the next time anyone finds out it's broken is when a real incident slips past it. The Sigma ecosystem has good tools for *validating* rule structure ([pySigma](https://github.com/SigmaHQ/pySigma), [sigma-cli](https://github.com/SigmaHQ/sigma-cli)) and for *converting* rules into vendor query languages — but nothing standard for asking the question that matters most:
+
+> When we tweak this rule, does it still fire on the attack it's supposed to catch, and does it still stay quiet on the benign activity that looks like the attack?
+
+`sigma-pipeline` answers that question. Each rule has a folder of positive fixtures (events the rule must match) and negative fixtures (events it must not match). `sigma test` walks them and fails the build on any miss. The lint, coverage, diff, and deploy stages exist to make that test loop actually usable in a real workflow — they're the scaffolding, not the centerpiece.
 
 | Stage    | What it does                                                                      |
 |----------|-----------------------------------------------------------------------------------|
-| lint     | YAML schema, required fields, ATT&CK tag format, unique IDs, condition parses     |
+| lint     | YAML schema, required fields, ATT&CK tag format, unique IDs, condition parses. `--strict` adds pySigma's validator suite. |
 | test     | each rule fires on its positive fixtures and stays silent on its negative ones    |
+| diff     | compare two rule sets, report added/removed/modified rules and coverage deltas    |
 | coverage | emits markdown table + ATT&CK Navigator JSON layer for the heatmap visual         |
 | deploy   | validated rules become saved searches in Splunk, idempotently, on merge to main   |
 
@@ -43,15 +51,18 @@ sigma deploy rules/ --dry-run    # prints the deploy plan, makes no changes
 ```
 sigma-pipeline/
 ├── src/sigma_pipeline/
-│   ├── cli.py          argparse entrypoint, registers subcommands
-│   ├── lint.py         rule-file linter
-│   ├── test.py         fixture-driven tester
-│   └── deploy.py       Splunk REST-API deploy
-├── rules/              .yml Sigma rules (the detection content)
+│   ├── cli.py              argparse entrypoint, registers subcommands
+│   ├── lint.py             rule-file linter (+ optional pySigma backend)
+│   ├── pysigma_backend.py  pySigma validator wrapper, used by `lint --strict`
+│   ├── test.py             fixture-driven tester
+│   ├── diff.py             rule-set / coverage diff
+│   ├── coverage.py         ATT&CK coverage reporter
+│   └── deploy.py           Splunk REST-API deploy
+├── rules/                  .yml Sigma rules (the detection content)
 ├── tests/fixtures/
 │   └── <rule_id>/
-│       ├── positive/   *.json events the rule MUST match
-│       └── negative/   *.json events the rule MUST NOT match
+│       ├── positive/       *.json events the rule MUST match
+│       └── negative/       *.json events the rule MUST NOT match
 └── .github/workflows/ci.yml
 ```
 
@@ -89,6 +100,39 @@ A failure looks like:
 ```
 
 Rules without fixtures are reported as untested but do not fail the run, so the pipeline can be adopted incrementally.
+
+## Strict lint (pySigma)
+
+`sigma lint --strict` runs the [pySigma](https://github.com/SigmaHQ/pySigma) validator suite in addition to the built-in checks. pySigma is the upstream reference implementation maintained by SigmaHQ; it knows about modifier semantics, deprecated fields, title conventions, and dozens of other rule-quality issues that the built-in linter doesn't bother re-implementing.
+
+```bash
+pip install -e .[strict]
+sigma lint rules/ --strict
+```
+
+Strict mode is opt-in so the base install stays light — pySigma pulls in a non-trivial dependency tree.
+
+## Coverage diffs
+
+`sigma diff` compares two rule sets and reports what changed:
+
+```bash
+sigma diff rules/ ../old-rules/
+```
+
+```text
+Rules:
+  + t1546_008_accessibility_features
+  - t1059_001_pwsh_encoded_legacy
+  ~ t1003_001_lsass_dump  (severity: high → critical)
+
+Coverage:
+  + T1546.008  (accessibility features)
+  - T1059.001  (powershell, no longer covered)
+    score:  T1003.001  4 → 5
+```
+
+Useful as a PR comment ("here's what this branch changes about our detection coverage") and as a release-notes generator. Markdown output via `--format markdown`.
 
 ## ATT&CK coverage
 
@@ -143,6 +187,7 @@ sigma deploy rules/ --host splunk.example.com --target-index main
 
 - [`splunk-sigma`](https://github.com/JacobRHess/splunk-sigma) — provides the rule-evaluation engine (`sigma_engine` package).
 - [`splunk-sdk`](https://pypi.org/project/splunk-sdk/) — Splunk REST API client used by the deploy stage.
+- [`pySigma`](https://github.com/SigmaHQ/pySigma) — optional, used by `lint --strict` for the upstream validator suite.
 - `pyyaml` — rule-file parsing.
 
 ## License

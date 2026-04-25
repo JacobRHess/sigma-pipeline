@@ -142,7 +142,7 @@ def _check_unique_ids(seen_ids: dict[str, list[Path]]) -> list[Finding]:
     return findings
 
 
-def lint_rule(path: Path) -> tuple[list[Finding], str | None]:
+def lint_rule(path: Path, strict: bool = False) -> tuple[list[Finding], str | None]:
     """Lint one rule file. Returns (findings, rule_id_or_None)."""
     try:
         doc = yaml.safe_load(path.read_text())
@@ -156,10 +156,13 @@ def lint_rule(path: Path) -> tuple[list[Finding], str | None]:
     findings += _check_enums(doc, path)
     findings += _check_attack_tags(doc, path)
     findings += _check_engine_loadable(path)
+    if strict:
+        from sigma_pipeline import pysigma_backend
+        findings += pysigma_backend.validate_rule(path)
     return findings, doc.get("id")
 
 
-def run(rules_dir: Path) -> int:
+def run(rules_dir: Path, strict: bool = False) -> int:
     if not rules_dir.is_dir():
         print(f"error: {rules_dir} is not a directory")
         return 2
@@ -173,7 +176,7 @@ def run(rules_dir: Path) -> int:
     seen_ids: dict[str, list[Path]] = defaultdict(list)
 
     for path in rule_files:
-        findings, rid = lint_rule(path)
+        findings, rid = lint_rule(path, strict=strict)
         all_findings.extend(findings)
         if rid:
             seen_ids[rid].append(path)

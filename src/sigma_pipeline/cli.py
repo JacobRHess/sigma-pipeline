@@ -3,6 +3,7 @@
 Subcommands:
     sigma lint      validate Sigma YAML files
     sigma test      run rules against fixture logs and assert match/no-match
+    sigma diff      compare two rule sets, report rule and coverage deltas
     sigma deploy    push validated rules to Splunk via the REST API
     sigma coverage  emit ATT&CK coverage as markdown or Navigator JSON layer
 """
@@ -12,7 +13,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from sigma_pipeline import coverage, deploy, lint, test
+from sigma_pipeline import coverage, deploy, diff, lint, test
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -21,6 +22,11 @@ def main(argv: list[str] | None = None) -> int:
 
     p_lint = sub.add_parser("lint", help="validate Sigma YAML files")
     p_lint.add_argument("rules_dir", type=Path, help="directory of Sigma .yml rules")
+    p_lint.add_argument(
+        "--strict",
+        action="store_true",
+        help="also run pySigma's validator suite (requires `pip install -e .[strict]`)",
+    )
 
     p_test = sub.add_parser("test", help="evaluate rules against fixture logs")
     p_test.add_argument("rules_dir", type=Path, help="directory of Sigma .yml rules")
@@ -45,6 +51,22 @@ def main(argv: list[str] | None = None) -> int:
         "--dry-run", action="store_true", help="print plan, do not write to Splunk"
     )
 
+    p_diff = sub.add_parser("diff", help="diff two rule sets and report coverage deltas")
+    p_diff.add_argument("rules_dir", type=Path, help="new (current) rules directory")
+    p_diff.add_argument("baseline_dir", type=Path, help="old (baseline) rules directory")
+    p_diff.add_argument(
+        "--format",
+        choices=["text", "markdown"],
+        default="text",
+        help="output format (default: text)",
+    )
+    p_diff.add_argument(
+        "--output",
+        type=Path,
+        default=None,
+        help="write to file instead of stdout",
+    )
+
     p_cov = sub.add_parser("coverage", help="emit ATT&CK coverage report")
     p_cov.add_argument("rules_dir", type=Path, help="directory of Sigma .yml rules")
     p_cov.add_argument(
@@ -62,9 +84,11 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parser.parse_args(argv)
     if args.cmd == "lint":
-        return lint.run(args.rules_dir)
+        return lint.run(args.rules_dir, strict=args.strict)
     if args.cmd == "test":
         return test.run(args.rules_dir, args.fixtures)
+    if args.cmd == "diff":
+        return diff.run(args.rules_dir, args.baseline_dir, args.format, args.output)
     if args.cmd == "deploy":
         return deploy.run(
             rules_dir=args.rules_dir,
