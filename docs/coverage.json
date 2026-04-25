@@ -1,0 +1,43 @@
+{
+  "name": "sigma-pipeline coverage",
+  "versions": {
+    "layer": "4.5",
+    "navigator": "5.0.0",
+    "attack": "15"
+  },
+  "domain": "enterprise-attack",
+  "description": "Detection coverage from sigma-pipeline rules, colored by severity.",
+  "gradient": {
+    "colors": [
+      "#a8c9ff",
+      "#0046d1"
+    ],
+    "minValue": 1,
+    "maxValue": 5
+  },
+  "techniques": [
+    {
+      "techniqueID": "T1003.001",
+      "score": 5,
+      "color": "#0046d1",
+      "comment": "LSASS Credential Dump Indicators (critical)",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1059.001",
+      "score": 4,
+      "color": "#2c6cff",
+      "comment": "PowerShell Encoded Command Execution (high)",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1105",
+      "score": 4,
+      "color": "#2c6cff",
+      "comment": "Suspicious Download via certutil.exe (high)",
+      "enabled": true
+    }
+  ],
+  "showTacticRowBackground": true,
+  "tacticRowBackground": "#f0f0f0"
+}

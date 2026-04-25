@@ -3,9 +3,10 @@
 Detection-as-code CI/CD for [Sigma](https://github.com/SigmaHQ/sigma) rules. Lints, tests against fixture logs, and deploys to Splunk via the REST API.
 
 ```bash
-sigma lint   rules/
-sigma test   rules/ --fixtures tests/fixtures
-sigma deploy rules/ --host splunk.example.com --target-index main
+sigma lint     rules/
+sigma test     rules/ --fixtures tests/fixtures
+sigma coverage rules/ --format navigator --output coverage.json
+sigma deploy   rules/ --host splunk.example.com --target-index main
 ```
 
 Built on top of [splunk-sigma](https://github.com/JacobRHess/splunk-sigma), which provides the rule-evaluation engine.
@@ -16,11 +17,12 @@ Built on top of [splunk-sigma](https://github.com/JacobRHess/splunk-sigma), whic
 
 Standard CI/CD checks code quality. Detection content needs its own checks: does the rule actually catch what it claims to, and does it stay quiet on benign activity? `sigma-pipeline` adds three Sigma-specific stages to a normal pipeline:
 
-| Stage  | What it checks                                                                    |
-|--------|-----------------------------------------------------------------------------------|
-| lint   | YAML schema, required fields, ATT&CK tag format, unique IDs, condition parses     |
-| test   | each rule fires on its positive fixtures and stays silent on its negative ones    |
-| deploy | validated rules become saved searches in Splunk, idempotently, on merge to main   |
+| Stage    | What it does                                                                      |
+|----------|-----------------------------------------------------------------------------------|
+| lint     | YAML schema, required fields, ATT&CK tag format, unique IDs, condition parses     |
+| test     | each rule fires on its positive fixtures and stays silent on its negative ones    |
+| coverage | emits markdown table + ATT&CK Navigator JSON layer for the heatmap visual         |
+| deploy   | validated rules become saved searches in Splunk, idempotently, on merge to main   |
 
 If someone tweaks a regex in a rule, the test stage catches the case where coverage silently breaks. That's the loop most detection teams don't have today.
 
@@ -87,6 +89,25 @@ A failure looks like:
 ```
 
 Rules without fixtures are reported as untested but do not fail the run, so the pipeline can be adopted incrementally.
+
+## ATT&CK coverage
+
+`sigma coverage` walks the rules and emits coverage in two formats:
+
+```bash
+# Markdown table — drop into a README or PR comment.
+sigma coverage rules/ --format markdown --output docs/COVERAGE.md
+
+# ATT&CK Navigator JSON layer — upload to
+# https://mitre-attack.github.io/attack-navigator/ for the heatmap view.
+sigma coverage rules/ --format navigator --output coverage.json
+```
+
+Severity is mapped to a 1–5 score (informational → critical) and Navigator
+colors techniques accordingly. Techniques covered by multiple rules take
+the maximum score.
+
+A pre-rendered markdown report is checked in at [`docs/COVERAGE.md`](docs/COVERAGE.md).
 
 ## How deploy works
 

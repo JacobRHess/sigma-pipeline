@@ -1,9 +1,10 @@
 """sigma-pipeline command-line entrypoint.
 
 Subcommands:
-    sigma lint    validate Sigma YAML files
-    sigma test    run rules against fixture logs and assert match/no-match
-    sigma deploy  push validated rules to Splunk via the REST API
+    sigma lint      validate Sigma YAML files
+    sigma test      run rules against fixture logs and assert match/no-match
+    sigma deploy    push validated rules to Splunk via the REST API
+    sigma coverage  emit ATT&CK coverage as markdown or Navigator JSON layer
 """
 from __future__ import annotations
 
@@ -11,7 +12,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from sigma_pipeline import deploy, lint, test
+from sigma_pipeline import coverage, deploy, lint, test
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -44,6 +45,21 @@ def main(argv: list[str] | None = None) -> int:
         "--dry-run", action="store_true", help="print plan, do not write to Splunk"
     )
 
+    p_cov = sub.add_parser("coverage", help="emit ATT&CK coverage report")
+    p_cov.add_argument("rules_dir", type=Path, help="directory of Sigma .yml rules")
+    p_cov.add_argument(
+        "--format",
+        choices=["markdown", "navigator"],
+        default="markdown",
+        help="output format (default: markdown)",
+    )
+    p_cov.add_argument(
+        "--output",
+        type=Path,
+        default=None,
+        help="write to file instead of stdout",
+    )
+
     args = parser.parse_args(argv)
     if args.cmd == "lint":
         return lint.run(args.rules_dir)
@@ -58,6 +74,8 @@ def main(argv: list[str] | None = None) -> int:
             target_index=args.target_index,
             dry_run=args.dry_run,
         )
+    if args.cmd == "coverage":
+        return coverage.run(args.rules_dir, args.format, args.output)
     parser.print_help()
     return 2
 
