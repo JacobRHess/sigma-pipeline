@@ -4,6 +4,10 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  # Deploy is manual until repo secrets (SPLUNK_HOST/USERNAME/PASSWORD) are
+  # configured. Switch the deploy job's `if:` line below to enable auto-deploy
+  # on push to main.
+  workflow_dispatch:
 
 jobs:
   lint-and-test:
@@ -34,10 +38,12 @@ jobs:
         run: ruff check src/
 
   deploy:
-    # Runs only on push to main, after lint+test pass.
-    # Requires repo secrets: SPLUNK_HOST, SPLUNK_USERNAME, SPLUNK_PASSWORD.
+    # Manual trigger for now; flip the `if:` below to
+    #   github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # once the repo's SPLUNK_HOST / SPLUNK_USERNAME / SPLUNK_PASSWORD secrets
+    # are configured.
     needs: lint-and-test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     environment: splunk-prod
     steps:
