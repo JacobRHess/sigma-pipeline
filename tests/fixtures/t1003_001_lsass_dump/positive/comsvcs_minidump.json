@@ -1,0 +1,7 @@
+{
+  "EventID": 1,
+  "Image": "C:\\Windows\\System32\\rundll32.exe",
+  "CommandLine": "rundll32.exe C:\\Windows\\System32\\comsvcs.dll, MiniDump 612 C:\\Temp\\lsass.dmp full",
+  "User": "CORP\\attacker",
+  "_time": "2026-04-25T14:08:00Z"
+}

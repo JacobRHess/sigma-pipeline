@@ -1,0 +1,7 @@
+{
+  "EventID": 1,
+  "Image": "C:\\Windows\\System32\\certutil.exe",
+  "CommandLine": "certutil.exe -dump C:\\certs\\corporate-ca.cer",
+  "User": "CORP\\admin",
+  "_time": "2026-04-25T14:12:00Z"
+}

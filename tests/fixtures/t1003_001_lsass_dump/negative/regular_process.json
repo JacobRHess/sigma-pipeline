@@ -1,0 +1,16 @@
+[
+  {
+    "EventID": 1,
+    "Image": "C:\\Windows\\System32\\svchost.exe",
+    "CommandLine": "C:\\Windows\\System32\\svchost.exe -k netsvcs",
+    "User": "NT AUTHORITY\\SYSTEM",
+    "_time": "2026-04-25T14:00:00Z"
+  },
+  {
+    "EventID": 1,
+    "Image": "C:\\Windows\\System32\\rundll32.exe",
+    "CommandLine": "rundll32.exe C:\\Windows\\System32\\shell32.dll, Control_RunDLL",
+    "User": "CORP\\alice",
+    "_time": "2026-04-25T14:01:00Z"
+  }
+]

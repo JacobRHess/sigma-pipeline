@@ -1,0 +1,7 @@
+{
+  "EventID": 1,
+  "Image": "C:\\Users\\attacker\\Downloads\\mimikatz.exe",
+  "CommandLine": "mimikatz.exe \"privilege::debug\" \"sekurlsa::logonpasswords\" exit",
+  "User": "CORP\\attacker",
+  "_time": "2026-04-25T14:05:02Z"
+}

@@ -1,0 +1,9 @@
+[
+  {
+    "EventID": 1,
+    "Image": "C:\\Program Files\\PowerShell\\7\\pwsh.exe",
+    "CommandLine": "pwsh.exe -EncodedCommand SQBuAHYAbwBrAGUALQA=",
+    "User": "CORP\\bob",
+    "_time": "2026-04-25T14:05:00Z"
+  }
+]

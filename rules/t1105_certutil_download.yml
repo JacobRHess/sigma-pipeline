@@ -1,0 +1,26 @@
+title: Suspicious Download via certutil.exe
+id: t1105_certutil_download
+status: stable
+description: >
+  certutil.exe -urlcache or -split is frequently abused as a built-in
+  downloader to retrieve secondary payloads.
+author: Jacob Hess
+date: 2026-04-25
+level: high
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_image:
+    Image|endswith: '\certutil.exe'
+  selection_args:
+    CommandLine|contains:
+      - ' -urlcache '
+      - ' -split '
+      - ' -f http'
+  condition: selection_image and selection_args
+tags:
+  - attack.command_and_control
+  - attack.t1105
+falsepositives:
+  - Legit certificate-cache maintenance does not download arbitrary URLs.

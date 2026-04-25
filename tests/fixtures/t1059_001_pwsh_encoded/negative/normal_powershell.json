@@ -1,0 +1,16 @@
+[
+  {
+    "EventID": 1,
+    "Image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "CommandLine": "powershell.exe -File C:\\Scripts\\backup.ps1",
+    "User": "CORP\\svc_backup",
+    "_time": "2026-04-25T03:00:00Z"
+  },
+  {
+    "EventID": 1,
+    "Image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "CommandLine": "powershell.exe Get-Process",
+    "User": "CORP\\alice",
+    "_time": "2026-04-25T14:02:00Z"
+  }
+]

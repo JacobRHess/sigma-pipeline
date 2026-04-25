@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sigma-pipeline"
+version = "0.1.0"
+description = "Detection-as-code CI/CD for Sigma rules: lint, test against fixtures, deploy to Splunk."
+requires-python = ">=3.9"
+authors = [{ name = "Jacob Hess" }]
+license = { text = "MIT" }
+readme = "README.md"
+dependencies = [
+    "pyyaml>=6.0",
+    "splunk-sigma @ git+https://github.com/JacobRHess/splunk-sigma.git@main",
+    "splunk-sdk>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "ruff>=0.1.0",
+]
+
+[project.scripts]
+sigma = "sigma_pipeline.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+packages = ["sigma_pipeline"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
