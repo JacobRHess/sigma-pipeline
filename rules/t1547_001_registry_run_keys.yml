@@ -1,0 +1,34 @@
+title: Persistence via Registry Run Keys
+id: t1547_001_registry_run_keys
+status: stable
+description: >
+  Detects writes to common Run / RunOnce registry keys used for autorun
+  persistence. Targets process_creation events for reg.exe / regedit.exe
+  invocations with suspicious paths.
+author: Jacob Hess
+date: 2026-04-25
+level: high
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_image:
+    Image|endswith:
+      - '\reg.exe'
+      - '\regedit.exe'
+  selection_args:
+    CommandLine|contains:
+      - 'CurrentVersion\Run'
+      - 'CurrentVersion\RunOnce'
+      - 'CurrentVersion\Policies\Explorer\Run'
+      - 'Wow6432Node\Microsoft\Windows\CurrentVersion\Run'
+  selection_write:
+    CommandLine|contains:
+      - ' add '
+      - ' /v '
+  condition: selection_image and selection_args and selection_write
+tags:
+  - attack.persistence
+  - attack.t1547.001
+falsepositives:
+  - Software installers legitimately registering autorun entries; allowlist by signer.

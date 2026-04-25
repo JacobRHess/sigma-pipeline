@@ -1,0 +1,7 @@
+{
+  "EventID": 1,
+  "Image": "C:\\Windows\\System32\\reg.exe",
+  "CommandLine": "reg.exe add HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run /v Updater /t REG_SZ /d C:\\Users\\Public\\loader.exe /f",
+  "User": "CORP\\victim",
+  "_time": "2026-04-25T14:05:02Z"
+}

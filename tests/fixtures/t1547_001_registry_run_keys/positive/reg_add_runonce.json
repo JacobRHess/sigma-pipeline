@@ -1,0 +1,7 @@
+{
+  "EventID": 1,
+  "Image": "C:\\Windows\\System32\\reg.exe",
+  "CommandLine": "reg add HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce /v Cleanup /d \"cmd.exe /c del C:\\Users\\Public\\loader.exe\" /f",
+  "User": "CORP\\victim",
+  "_time": "2026-04-25T14:08:01Z"
+}

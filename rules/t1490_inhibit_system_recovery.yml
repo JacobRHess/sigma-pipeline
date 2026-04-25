@@ -1,0 +1,43 @@
+title: Inhibit System Recovery (Ransomware Indicator)
+id: t1490_inhibit_system_recovery
+status: stable
+description: >
+  Detects commands that disable Windows recovery features prior to file
+  encryption: deleting volume shadow copies, disabling automatic recovery
+  via bcdedit, and clearing the WMI shadow store.
+author: Jacob Hess
+date: 2026-04-25
+level: critical
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_vssadmin:
+    Image|endswith:
+      - '\vssadmin.exe'
+    CommandLine|contains:
+      - 'delete shadows'
+      - 'resize shadowstorage'
+  selection_wmic_shadow:
+    Image|endswith:
+      - '\wmic.exe'
+    CommandLine|contains:
+      - 'shadowcopy delete'
+  selection_bcdedit:
+    Image|endswith:
+      - '\bcdedit.exe'
+    CommandLine|contains:
+      - 'recoveryenabled no'
+      - 'bootstatuspolicy ignoreallfailures'
+  selection_wbadmin:
+    Image|endswith:
+      - '\wbadmin.exe'
+    CommandLine|contains:
+      - 'delete catalog'
+      - 'delete systemstatebackup'
+  condition: 1 of selection_*
+tags:
+  - attack.impact
+  - attack.t1490
+falsepositives:
+  - Backup-software vendors invoking these tools during scheduled maintenance.

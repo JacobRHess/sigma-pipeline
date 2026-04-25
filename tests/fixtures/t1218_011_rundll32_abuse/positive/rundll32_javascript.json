@@ -1,0 +1,8 @@
+{
+  "EventID": 1,
+  "Image": "C:\\Windows\\System32\\rundll32.exe",
+  "CommandLine": "rundll32.exe javascript:\"\\..\\mshtml,RunHTMLApplication \";document.write();new%20ActiveXObject(\"WScript.Shell\").Run(\"calc.exe\")",
+  "ParentImage": "C:\\Windows\\explorer.exe",
+  "User": "CORP\\victim",
+  "_time": "2026-04-25T14:20:01Z"
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "EventID": 1,
+    "Image": "C:\\Windows\\System32\\vssadmin.exe",
+    "CommandLine": "vssadmin.exe list shadows",
+    "ParentImage": "C:\\Windows\\System32\\cmd.exe",
+    "User": "CORP\\sysadmin",
+    "_time": "2026-04-25T14:50:01Z"
+  },
+  {
+    "EventID": 1,
+    "Image": "C:\\Windows\\System32\\bcdedit.exe",
+    "CommandLine": "bcdedit.exe /enum",
+    "ParentImage": "C:\\Windows\\System32\\cmd.exe",
+    "User": "CORP\\sysadmin",
+    "_time": "2026-04-25T14:50:55Z"
+  }
+]

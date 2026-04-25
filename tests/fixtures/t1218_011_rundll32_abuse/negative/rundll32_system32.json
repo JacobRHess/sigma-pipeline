@@ -1,0 +1,18 @@
+[
+  {
+    "EventID": 1,
+    "Image": "C:\\Windows\\System32\\rundll32.exe",
+    "CommandLine": "rundll32.exe printui.dll,PrintUIEntry /im",
+    "ParentImage": "C:\\Windows\\System32\\spoolsv.exe",
+    "User": "CORP\\sysadmin",
+    "_time": "2026-04-25T14:25:00Z"
+  },
+  {
+    "EventID": 1,
+    "Image": "C:\\Windows\\System32\\rundll32.exe",
+    "CommandLine": "rundll32.exe C:\\Windows\\System32\\dpapi.dll,CryptUnprotectData",
+    "ParentImage": "C:\\Windows\\explorer.exe",
+    "User": "CORP\\victim",
+    "_time": "2026-04-25T14:26:00Z"
+  }
+]

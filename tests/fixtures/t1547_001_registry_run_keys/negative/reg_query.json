@@ -1,0 +1,16 @@
+[
+  {
+    "EventID": 1,
+    "Image": "C:\\Windows\\System32\\reg.exe",
+    "CommandLine": "reg.exe query HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+    "User": "CORP\\sysadmin",
+    "_time": "2026-04-25T14:10:00Z"
+  },
+  {
+    "EventID": 1,
+    "Image": "C:\\Windows\\System32\\reg.exe",
+    "CommandLine": "reg.exe add HKLM\\Software\\Acme\\Settings /v Locale /d en-US /f",
+    "User": "CORP\\victim",
+    "_time": "2026-04-25T14:11:00Z"
+  }
+]

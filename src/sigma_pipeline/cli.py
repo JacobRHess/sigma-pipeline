@@ -4,6 +4,7 @@ Subcommands:
     sigma lint      validate Sigma YAML files
     sigma test      run rules against fixture logs and assert match/no-match
     sigma diff      compare two rule sets, report rule and coverage deltas
+    sigma stats     summarize rule counts by severity, tactic, and logsource
     sigma deploy    push validated rules to Splunk via the REST API
     sigma coverage  emit ATT&CK coverage as markdown or Navigator JSON layer
 """
@@ -13,7 +14,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from sigma_pipeline import coverage, deploy, diff, lint, test
+from sigma_pipeline import coverage, deploy, diff, lint, stats, test
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -67,6 +68,9 @@ def main(argv: list[str] | None = None) -> int:
         help="write to file instead of stdout",
     )
 
+    p_stats = sub.add_parser("stats", help="summarize rule counts by severity/tactic/logsource")
+    p_stats.add_argument("rules_dir", type=Path, help="directory of Sigma .yml rules")
+
     p_cov = sub.add_parser("coverage", help="emit ATT&CK coverage report")
     p_cov.add_argument("rules_dir", type=Path, help="directory of Sigma .yml rules")
     p_cov.add_argument(
@@ -89,6 +93,8 @@ def main(argv: list[str] | None = None) -> int:
         return test.run(args.rules_dir, args.fixtures)
     if args.cmd == "diff":
         return diff.run(args.rules_dir, args.baseline_dir, args.format, args.output)
+    if args.cmd == "stats":
+        return stats.run(args.rules_dir)
     if args.cmd == "deploy":
         return deploy.run(
             rules_dir=args.rules_dir,

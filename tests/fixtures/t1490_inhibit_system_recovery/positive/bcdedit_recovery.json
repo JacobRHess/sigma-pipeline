@@ -1,0 +1,8 @@
+{
+  "EventID": 1,
+  "Image": "C:\\Windows\\System32\\bcdedit.exe",
+  "CommandLine": "bcdedit.exe /set {default} bootstatuspolicy ignoreallfailures",
+  "ParentImage": "C:\\Users\\victim\\Downloads\\loader.exe",
+  "User": "CORP\\victim",
+  "_time": "2026-04-25T14:42:04Z"
+}

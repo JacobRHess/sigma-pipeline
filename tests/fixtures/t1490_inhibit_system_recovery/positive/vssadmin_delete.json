@@ -1,0 +1,8 @@
+{
+  "EventID": 1,
+  "Image": "C:\\Windows\\System32\\vssadmin.exe",
+  "CommandLine": "vssadmin.exe delete shadows /all /quiet",
+  "ParentImage": "C:\\Users\\victim\\Downloads\\loader.exe",
+  "User": "CORP\\victim",
+  "_time": "2026-04-25T14:40:01Z"
+}

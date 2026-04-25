@@ -29,6 +29,7 @@ Most teams treat Sigma rules as configuration: someone writes the YAML, it gets 
 | lint     | YAML schema, required fields, ATT&CK tag format, unique IDs, condition parses. `--strict` adds pySigma's validator suite. |
 | test     | each rule fires on its positive fixtures and stays silent on its negative ones    |
 | diff     | compare two rule sets, report added/removed/modified rules and coverage deltas    |
+| stats    | rule counts by severity / ATT&CK tactic / logsource — single-glance pulse         |
 | coverage | emits markdown table + ATT&CK Navigator JSON layer for the heatmap visual         |
 | deploy   | validated rules become saved searches in Splunk, idempotently, on merge to main   |
 
@@ -56,6 +57,7 @@ sigma-pipeline/
 │   ├── pysigma_backend.py  pySigma validator wrapper, used by `lint --strict`
 │   ├── test.py             fixture-driven tester
 │   ├── diff.py             rule-set / coverage diff
+│   ├── stats.py            rule-corpus summary (severity / tactic / logsource)
 │   ├── coverage.py         ATT&CK coverage reporter
 │   └── deploy.py           Splunk REST-API deploy
 ├── rules/                  .yml Sigma rules (the detection content)
@@ -133,6 +135,34 @@ Coverage:
 ```
 
 Useful as a PR comment ("here's what this branch changes about our detection coverage") and as a release-notes generator. Markdown output via `--format markdown`.
+
+**Automated in CI:** `.github/workflows/pr-coverage-diff.yml` runs `sigma diff` on every PR that touches `rules/` and posts the result as a sticky PR comment. Reviewers see coverage impact at a glance instead of reading raw YAML diffs. The comment is updated in place on each new commit.
+
+## Rule pulse
+
+`sigma stats` summarizes the rule corpus at a glance — useful for release notes or quick health checks:
+
+```text
+$ sigma stats rules/
+
+Rules:       6
+Techniques:  6
+
+Severity:
+  high           4
+  critical       2
+
+By tactic:
+  command_and_control    1
+  credential_access      1
+  defense_evasion        1
+  execution              1
+  impact                 1
+  persistence            1
+
+By logsource:
+  process_creation/windows         6
+```
 
 ## ATT&CK coverage
 

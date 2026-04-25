@@ -1,0 +1,33 @@
+title: Suspicious rundll32.exe Execution
+id: t1218_011_rundll32_abuse
+status: stable
+description: >
+  Detects rundll32.exe used as a signed-binary proxy for malicious DLLs.
+  Patterns: rundll32 launching from user-writable directories, executing
+  inline JavaScript via mshtml, or invoking exports of unusual DLLs.
+author: Jacob Hess
+date: 2026-04-25
+level: high
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_image:
+    Image|endswith:
+      - '\rundll32.exe'
+  selection_suspicious:
+    CommandLine|contains:
+      - 'javascript:'
+      - 'mshtml,RunHTMLApplication'
+      - 'shell32.dll,Control_RunDLL'
+      - '\AppData\Local\'
+      - '\AppData\Roaming\'
+      - '\Users\Public\'
+      - '\Temp\'
+  condition: selection_image and selection_suspicious
+tags:
+  - attack.defense_evasion
+  - attack.t1218.011
+falsepositives:
+  - Some installers drop DLLs into AppData and call rundll32 legitimately;
+    tune by signed-binary status of the parent process.

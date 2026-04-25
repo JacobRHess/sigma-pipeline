@@ -36,6 +36,27 @@
       "color": "#2c6cff",
       "comment": "Suspicious Download via certutil.exe (high)",
       "enabled": true
+    },
+    {
+      "techniqueID": "T1218.011",
+      "score": 4,
+      "color": "#2c6cff",
+      "comment": "Suspicious rundll32.exe Execution (high)",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1490",
+      "score": 5,
+      "color": "#0046d1",
+      "comment": "Inhibit System Recovery (Ransomware Indicator) (critical)",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1547.001",
+      "score": 4,
+      "color": "#2c6cff",
+      "comment": "Persistence via Registry Run Keys (high)",
+      "enabled": true
     }
   ],
   "showTacticRowBackground": true,
