@@ -6,6 +6,9 @@ Each event is enriched with the rule's metadata (severity, technique,
 tactic, title) and timestamps are spread across the last 24h so the
 timeline panel has texture.
 
+Install (the seeder needs `requests`, declared under the [demo] extra):
+    pip install -e .[demo]
+
 Usage (basic auth):
     SPLUNK_USERNAME=admin SPLUNK_PASSWORD=... python scripts/seed_splunk_demo.py
 

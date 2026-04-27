@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from sigma_engine.rules import Rule, Selection
+
 from sigma_pipeline.coverage import _gather, _markdown, _navigator, _technique_ids
 
 

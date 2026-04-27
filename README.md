@@ -213,17 +213,28 @@ search index=<target_index> | sigma rules="id:<rule_id>"
 
 The `splunk-sigma` app does the actual evaluation at search time; the saved search is a thin handle so analysts can find, schedule, and alert on each rule from Splunk Web. Deploys are idempotent (existing saved searches are updated in place; new ones are created).
 
+`--with-dashboard DIR` additionally pushes every `*.xml` under `DIR` as a Splunk SimpleXML view via the `data/ui/views` REST endpoint, also idempotently. A reference dashboard is included at [`splunk/dashboards/sigma_overview.xml`](splunk/dashboards/sigma_overview.xml) — single-value tiles for rules / techniques / tactics, fires-over-time stacked by severity, top firing rules, severity pie, technique heatmap, and a recent-fires table.
+
 Authentication uses `SPLUNK_USERNAME` / `SPLUNK_PASSWORD` environment variables. The `--dry-run` flag prints the plan without writing.
 
 ```bash
 export SPLUNK_USERNAME=admin
 export SPLUNK_PASSWORD='<pw>'
-sigma deploy rules/ --host splunk.example.com --target-index main
+sigma deploy rules/ --host splunk.example.com --target-index main \
+                    --with-dashboard splunk/dashboards
 ```
 
-## CI workflow
+## CI workflows
 
-`.github/workflows/ci.yml` runs lint and test on every push and pull request. On merges to `main`, it additionally runs deploy against a Splunk instance configured via repo secrets (`SPLUNK_HOST`, `SPLUNK_USERNAME`, `SPLUNK_PASSWORD`). Deploy is gated on the `splunk-prod` GitHub Environment, which lets you require manual approval before production rules change.
+Three GitHub Actions workflows form the pipeline:
+
+| Workflow | Trigger | What it does |
+|----------|---------|--------------|
+| [`ci.yml`](.github/workflows/ci.yml) | push, pull_request | lint (`--strict` advisory), pytest, multi-Python matrix |
+| [`pr-coverage-diff.yml`](.github/workflows/pr-coverage-diff.yml) | pull_request on `rules/**` | runs `sigma diff` against the base branch and posts a sticky comment with rule and coverage deltas |
+| [`deploy.yml`](.github/workflows/deploy.yml) | workflow_dispatch | re-runs lint and test, then deploys (`dry-run` or `apply`); `apply` requires manual approval via the `production` GitHub Environment |
+
+Deploy auth comes from the `SPLUNK_USERNAME` and `SPLUNK_PASSWORD` repo secrets. The job is *manual on purpose* — detection content shouldn't ship without a human looking at the coverage diff first.
 
 ## Adding a rule
 
