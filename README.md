@@ -39,6 +39,16 @@ Most teams treat Sigma rules as configuration: someone writes the YAML, it gets 
 
 If someone tweaks a regex in a rule, the test stage catches the case where coverage silently breaks. That's the loop most detection teams don't have today.
 
+## Who this is for
+
+`sigma-pipeline` is for teams that:
+
+- manage Sigma rules in Git
+- want CI checks before rule changes merge
+- need confidence that rules still match known-bad examples
+- want coverage visibility across MITRE ATT&CK
+- deploy detections into Splunk
+
 ## The pipeline
 
 ```mermaid
@@ -243,6 +253,13 @@ Deploy auth comes from the `SPLUNK_USERNAME` and `SPLUNK_PASSWORD` repo secrets.
 3. Create `tests/fixtures/<rule_id>/negative/*.json` with at least one event it should not match (a near-miss that exercises the boundary is more valuable than a totally unrelated event).
 4. Run `sigma lint rules/` and `sigma test rules/ --fixtures tests/fixtures` locally.
 5. Open a PR. CI runs the same checks before merge.
+
+## Limitations
+
+- Fixture quality determines test quality; passing tests do not prove a rule catches all variants.
+- Rules without fixtures are reported but do not fail by default.
+- Splunk deployment assumes [`splunk-sigma`](https://github.com/JacobRHess/splunk-sigma) is installed and available in the target Splunk environment.
+- The current deploy target is Splunk; other SIEM backends are not implemented yet.
 
 ## Dependencies
 
