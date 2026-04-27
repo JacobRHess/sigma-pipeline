@@ -51,6 +51,13 @@ def main(argv: list[str] | None = None) -> int:
     p_deploy.add_argument(
         "--dry-run", action="store_true", help="print plan, do not write to Splunk"
     )
+    p_deploy.add_argument(
+        "--with-dashboard",
+        type=Path,
+        default=None,
+        metavar="DIR",
+        help="also push every .xml under DIR as a Splunk dashboard view",
+    )
 
     p_diff = sub.add_parser("diff", help="diff two rule sets and report coverage deltas")
     p_diff.add_argument("rules_dir", type=Path, help="new (current) rules directory")
@@ -103,6 +110,7 @@ def main(argv: list[str] | None = None) -> int:
             app=args.app,
             target_index=args.target_index,
             dry_run=args.dry_run,
+            dashboards_dir=args.with_dashboard,
         )
     if args.cmd == "coverage":
         return coverage.run(args.rules_dir, args.format, args.output)

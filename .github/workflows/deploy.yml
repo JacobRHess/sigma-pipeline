@@ -1,0 +1,77 @@
+name: deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Splunk host (FQDN reachable from GitHub runners)"
+        required: true
+        default: "splunk.example.com"
+      app:
+        description: "Splunk app to deploy into"
+        required: true
+        default: "splunk-sigma"
+      target_index:
+        description: "Index the saved searches will run against"
+        required: true
+        default: "main"
+      mode:
+        description: "dry-run or apply"
+        required: true
+        default: "dry-run"
+        type: choice
+        options:
+          - dry-run
+          - apply
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # 'apply' runs require manual approval via the production environment.
+    # 'dry-run' runs anywhere with no gate so anyone can preview the plan.
+    environment: ${{ github.event.inputs.mode == 'apply' && 'production' || '' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install package
+        run: pip install -e .
+
+      - name: Sigma lint (gate)
+        run: sigma lint rules/
+
+      - name: Sigma test (gate)
+        run: sigma test rules/ --fixtures tests/fixtures
+
+      - name: Deploy plan (dry-run)
+        if: ${{ github.event.inputs.mode == 'dry-run' }}
+        run: |
+          sigma deploy rules/ \
+            --host "${{ github.event.inputs.target }}" \
+            --app "${{ github.event.inputs.app }}" \
+            --target-index "${{ github.event.inputs.target_index }}" \
+            --with-dashboard splunk/dashboards \
+            --dry-run
+
+      - name: Deploy apply
+        if: ${{ github.event.inputs.mode == 'apply' }}
+        env:
+          SPLUNK_USERNAME: ${{ secrets.SPLUNK_USERNAME }}
+          SPLUNK_PASSWORD: ${{ secrets.SPLUNK_PASSWORD }}
+        run: |
+          if [ -z "${SPLUNK_USERNAME:-}" ] || [ -z "${SPLUNK_PASSWORD:-}" ]; then
+            echo "::error::SPLUNK_USERNAME and SPLUNK_PASSWORD must be set as repo secrets"
+            exit 1
+          fi
+          sigma deploy rules/ \
+            --host "${{ github.event.inputs.target }}" \
+            --app "${{ github.event.inputs.app }}" \
+            --target-index "${{ github.event.inputs.target_index }}" \
+            --with-dashboard splunk/dashboards

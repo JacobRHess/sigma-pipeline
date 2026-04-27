@@ -39,6 +39,22 @@ Most teams treat Sigma rules as configuration: someone writes the YAML, it gets 
 
 If someone tweaks a regex in a rule, the test stage catches the case where coverage silently breaks. That's the loop most detection teams don't have today.
 
+## The pipeline
+
+```mermaid
+flowchart LR
+    PR[Pull request<br/>touches rules/] --> Lint[sigma lint<br/>--strict]
+    Lint --> Test[sigma test<br/>fixtures]
+    Test --> CovDiff[sigma diff<br/>+ coverage delta]
+    CovDiff -->|sticky comment on PR| Reviewer{{Reviewer}}
+    Reviewer -->|approve + merge| Main[main branch]
+    Main -->|workflow_dispatch| Gate[[production<br/>environment<br/>approval]]
+    Gate --> Deploy[sigma deploy<br/>--with-dashboard]
+    Deploy --> Splunk[(Splunk<br/>saved searches<br/>+ dashboard)]
+```
+
+Every stage is a real GitHub Actions job: [`ci.yml`](.github/workflows/ci.yml) runs lint and test on every push, [`pr-coverage-diff.yml`](.github/workflows/pr-coverage-diff.yml) posts the coverage-delta comment on rule-touching PRs, and [`deploy.yml`](.github/workflows/deploy.yml) is the manual `workflow_dispatch` deploy gated on a `production` environment for human approval. The deploy job lints and tests again before pushing — a green merge isn't a substitute for re-validating against `main`'s exact state at deploy time.
+
 ## Quickstart
 
 ```bash

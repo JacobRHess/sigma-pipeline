@@ -1,0 +1,148 @@
+<dashboard version="1.1" theme="dark">
+  <label>Sigma Pipeline - Detection Overview</label>
+  <description>Live view of Sigma rule fires, ATT&amp;CK coverage, and severity distribution. Driven by sigma-pipeline.</description>
+
+  <row>
+    <panel>
+      <single>
+        <title>Total Rules Deployed</title>
+        <search>
+          <query>index=main sourcetype="sigma:fire" | stats dc(sigma_rule_id) as rules</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="colorBy">value</option>
+        <option name="rangeColors">["0x53a051","0x53a051"]</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Techniques Covered</title>
+        <search>
+          <query>index=main sourcetype="sigma:fire" | stats dc(sigma_technique) as techniques</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="colorBy">value</option>
+        <option name="rangeColors">["0x1e93c6","0x1e93c6"]</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Tactics Covered</title>
+        <search>
+          <query>index=main sourcetype="sigma:fire" | stats dc(sigma_tactic) as tactics</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="colorBy">value</option>
+        <option name="rangeColors">["0x9b59b6","0x9b59b6"]</option>
+      </single>
+    </panel>
+    <panel>
+      <single>
+        <title>Fires (24h)</title>
+        <search>
+          <query>index=main sourcetype="sigma:fire" | stats count</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="colorBy">value</option>
+        <option name="rangeColors">["0xf1813f","0xf1813f"]</option>
+      </single>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <chart>
+        <title>Rule Fires Over Time</title>
+        <search>
+          <query>index=main sourcetype="sigma:fire" | timechart span=1h count by sigma_severity</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.legend.placement">bottom</option>
+        <option name="charting.fieldColors">{"critical":0xd93f3c,"high":0xf1813f,"medium":0xf2b827,"low":0x6db7c6}</option>
+      </chart>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <chart>
+        <title>Top Firing Rules</title>
+        <search>
+          <query>index=main sourcetype="sigma:fire" | stats count by sigma_title sigma_severity | sort - count | head 10</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Severity Distribution</title>
+        <search>
+          <query>index=main sourcetype="sigma:fire" | stats count by sigma_severity</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.fieldColors">{"critical":0xd93f3c,"high":0xf1813f,"medium":0xf2b827,"low":0x6db7c6}</option>
+      </chart>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <chart>
+        <title>ATT&amp;CK Tactic Coverage</title>
+        <search>
+          <query>index=main sourcetype="sigma:fire" | stats dc(sigma_rule_id) as rules count as fires by sigma_tactic | sort - rules</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.chart">bar</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+    <panel>
+      <table>
+        <title>Technique Heatmap</title>
+        <search>
+          <query>index=main sourcetype="sigma:fire" | stats count as fires values(sigma_title) as rules by sigma_technique sigma_tactic | sort - fires</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <format type="color" field="fires">
+          <colorPalette type="minMidMax" maxColor="0xd93f3c" midColor="0xf1813f" minColor="0xf2b827"/>
+          <scale type="minMidMax"/>
+        </format>
+      </table>
+    </panel>
+  </row>
+
+  <row>
+    <panel>
+      <table>
+        <title>Recent Fires</title>
+        <search>
+          <query>index=main sourcetype="sigma:fire" | sort - _time | head 25 | table _time sigma_severity sigma_title sigma_technique sigma_tactic Image User</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="count">25</option>
+      </table>
+    </panel>
+  </row>
+</dashboard>

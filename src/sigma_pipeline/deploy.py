@@ -51,6 +51,37 @@ def _plan(rules: list[Rule], target_index: str) -> list[tuple[str, str, str]]:
     ]
 
 
+def _dashboard_files(dashboards_dir: Path | None) -> list[Path]:
+    if dashboards_dir is None:
+        return []
+    if not dashboards_dir.is_dir():
+        return []
+    return sorted(dashboards_dir.glob("*.xml"))
+
+
+def _deploy_dashboards(service, files: list[Path]) -> tuple[int, int]:
+    """Push SimpleXML dashboards via the data/ui/views REST collection.
+
+    Idempotent: try to create, on 409 Conflict update in place.
+    """
+    from splunklib.binding import HTTPError
+
+    created = updated = 0
+    for path in files:
+        name = path.stem
+        body = path.read_text()
+        try:
+            service.post("data/ui/views", name=name, **{"eai:data": body})
+            created += 1
+        except HTTPError as exc:
+            if exc.status != 409:
+                raise
+            service.post(f"data/ui/views/{name}", **{"eai:data": body})
+            updated += 1
+        print(f"  ok: dashboard {name}")
+    return created, updated
+
+
 def run(
     rules_dir: Path,
     host: str,
@@ -58,6 +89,7 @@ def run(
     app: str,
     target_index: str,
     dry_run: bool,
+    dashboards_dir: Path | None = None,
 ) -> int:
     if not rules_dir.is_dir():
         print(f"error: {rules_dir} is not a directory")
@@ -68,13 +100,17 @@ def run(
         return 2
 
     plan = _plan(rules, target_index)
+    dashboards = _dashboard_files(dashboards_dir)
     print(
-        f"deploy: {len(plan)} rule(s) -> {host}:{port} app={app} index={target_index}"
+        f"deploy: {len(plan)} rule(s), {len(dashboards)} dashboard(s) "
+        f"-> {host}:{port} app={app} index={target_index}"
         f"{' (dry-run)' if dry_run else ''}"
     )
     for name, spl, _desc in plan:
-        print(f"  - {name}")
+        print(f"  - saved-search {name}")
         print(f"      {spl}")
+    for d in dashboards:
+        print(f"  - dashboard    {d.stem}")
     if dry_run:
         return 0
 
@@ -106,7 +142,14 @@ def run(
         else:
             saved.create(name, spl, description=desc)
             created += 1
-        print(f"  ok: {name}")
+        print(f"  ok: saved-search {name}")
 
-    print(f"\ndeploy: {created} created, {updated} updated")
+    d_created = d_updated = 0
+    if dashboards:
+        d_created, d_updated = _deploy_dashboards(service, dashboards)
+
+    print(
+        f"\ndeploy: saved-searches {created} created / {updated} updated; "
+        f"dashboards {d_created} created / {d_updated} updated"
+    )
     return 0
