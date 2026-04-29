@@ -14,6 +14,7 @@ duplicated.
 Auth: SPLUNK_USERNAME / SPLUNK_PASSWORD environment variables, matching
 the convention used by splunk-sigma's `sigma_watch` service.
 """
+
 from __future__ import annotations
 
 import os
@@ -129,9 +130,7 @@ def run(
         )
         return 2
 
-    service = splunk_client.connect(
-        host=host, port=port, username=user, password=pw, app=app
-    )
+    service = splunk_client.connect(host=host, port=port, username=user, password=pw, app=app)
     saved = service.saved_searches
 
     created = updated = 0

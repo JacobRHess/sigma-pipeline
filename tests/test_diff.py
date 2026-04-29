@@ -1,4 +1,5 @@
 """Unit tests for the diff command."""
+
 from __future__ import annotations
 
 from sigma_engine.rules import FieldMatcher, Rule, Selection
@@ -17,9 +18,7 @@ def _rule(rid: str, level: str = "high", attack=None, image: str = "\\evil.exe")
         selections={
             "sel": Selection(
                 name="sel",
-                matchers=[
-                    FieldMatcher(field_name="Image", operator="endswith", patterns=[image])
-                ],
+                matchers=[FieldMatcher(field_name="Image", operator="endswith", patterns=[image])],
             )
         },
         condition="sel",

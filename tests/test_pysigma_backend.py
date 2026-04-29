@@ -4,6 +4,7 @@ The backend is meant to degrade gracefully:
   - returns a single 'install pysigma' warning when the import fails
   - never raises on a malformed rule (all parse errors become warnings)
 """
+
 from __future__ import annotations
 
 from pathlib import Path

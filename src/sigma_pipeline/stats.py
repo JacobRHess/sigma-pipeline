@@ -4,6 +4,7 @@ Counts rules by severity, ATT&CK tactic, and logsource. Useful as a
 single-glance "where does our coverage stand?" snapshot for PR comments
 or release notes.
 """
+
 from __future__ import annotations
 
 import sys
@@ -16,10 +17,20 @@ from sigma_engine.rules import Rule
 # Sigma's recognized ATT&CK tactic tags. Anything in attack.* that isn't
 # a technique (T-prefixed) and matches one of these is counted as a tactic.
 KNOWN_TACTICS = {
-    "reconnaissance", "resource_development", "initial_access", "execution",
-    "persistence", "privilege_escalation", "defense_evasion", "credential_access",
-    "discovery", "lateral_movement", "collection", "command_and_control",
-    "exfiltration", "impact",
+    "reconnaissance",
+    "resource_development",
+    "initial_access",
+    "execution",
+    "persistence",
+    "privilege_escalation",
+    "defense_evasion",
+    "credential_access",
+    "discovery",
+    "lateral_movement",
+    "collection",
+    "command_and_control",
+    "exfiltration",
+    "impact",
 }
 
 

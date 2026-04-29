@@ -43,8 +43,11 @@ jobs:
       - name: pytest
         run: pytest -q
 
-      - name: ruff
-        run: ruff check src/
+      - name: ruff lint
+        run: ruff check .
+
+      - name: ruff format check
+        run: ruff format --check .
 
   deploy:
     # Manual trigger for now; flip the `if:` below to
