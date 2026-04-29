@@ -8,6 +8,7 @@ Subcommands:
     sigma deploy    push validated rules to Splunk via the REST API
     sigma coverage  emit ATT&CK coverage as markdown or Navigator JSON layer
 """
+
 from __future__ import annotations
 
 import argparse

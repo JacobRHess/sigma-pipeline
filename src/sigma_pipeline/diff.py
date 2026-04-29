@@ -10,6 +10,7 @@ Output formats:
     text      Plain text grouped under Rules:/Coverage: headings (default)
     markdown  Same content as a markdown bullet list, suitable for PR comments
 """
+
 from __future__ import annotations
 
 import sys

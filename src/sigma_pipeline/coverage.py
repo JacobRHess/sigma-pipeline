@@ -13,6 +13,7 @@ Severity → coverage score mapping:
     informational=1, low=2, medium=3, high=4, critical=5
 A technique covered by multiple rules takes the maximum severity score.
 """
+
 from __future__ import annotations
 
 import json

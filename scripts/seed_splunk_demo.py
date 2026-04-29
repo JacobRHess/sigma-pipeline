@@ -19,6 +19,7 @@ Optional:
     --host (default localhost) --port (default 8089) --index (default main)
     --fires-per-fixture (default 6) --hours (default 24)
 """
+
 from __future__ import annotations
 
 import argparse

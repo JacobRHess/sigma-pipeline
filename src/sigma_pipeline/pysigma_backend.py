@@ -13,6 +13,7 @@ Some pySigma validators (notably ATTACKTagValidator) load a live MITRE
 ATT&CK feed at first use. We skip any validator that errors on init
 or returns a network-related RuntimeError, so this works offline.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -23,6 +24,7 @@ from sigma_pipeline.lint import Finding
 def _try_import():
     try:
         from sigma.collection import SigmaCollection  # noqa: F401
+
         return True
     except ImportError:
         return False

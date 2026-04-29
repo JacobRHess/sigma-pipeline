@@ -1,4 +1,5 @@
 """Unit tests for the stats command."""
+
 from __future__ import annotations
 
 from sigma_engine.rules import FieldMatcher, Rule, Selection

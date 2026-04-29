@@ -14,6 +14,7 @@ Pass criteria:
 A rule with no fixtures is reported as a warning (untested coverage),
 not a failure — so that the pipeline can be adopted incrementally.
 """
+
 from __future__ import annotations
 
 import json

@@ -14,6 +14,7 @@ Cross-rule checks:
 
 Exit code: 0 on clean, 1 on any failure.
 """
+
 from __future__ import annotations
 
 import re
@@ -70,14 +71,10 @@ def _check_enums(doc: dict[str, Any], path: Path) -> list[Finding]:
     findings = []
     level = doc.get("level")
     if level is not None and level not in VALID_LEVELS:
-        findings.append(
-            Finding(path, "error", f"level '{level}' not in {sorted(VALID_LEVELS)}")
-        )
+        findings.append(Finding(path, "error", f"level '{level}' not in {sorted(VALID_LEVELS)}"))
     status = doc.get("status")
     if status is not None and status not in VALID_STATUS:
-        findings.append(
-            Finding(path, "error", f"status '{status}' not in {sorted(VALID_STATUS)}")
-        )
+        findings.append(Finding(path, "error", f"status '{status}' not in {sorted(VALID_STATUS)}"))
     return findings
 
 
@@ -106,9 +103,7 @@ def _check_attack_tags(doc: dict[str, Any], path: Path) -> list[Finding]:
         if ATTACK_TECHNIQUE_RE.match(tag):
             has_technique = True
     if not has_technique:
-        findings.append(
-            Finding(path, "warning", "no ATT&CK technique tag (attack.tNNNN[.NNN])")
-        )
+        findings.append(Finding(path, "warning", "no ATT&CK technique tag (attack.tNNNN[.NNN])"))
     return findings
 
 
@@ -158,6 +153,7 @@ def lint_rule(path: Path, strict: bool = False) -> tuple[list[Finding], str | No
     findings += _check_engine_loadable(path)
     if strict:
         from sigma_pipeline import pysigma_backend
+
         findings += pysigma_backend.validate_rule(path)
     return findings, doc.get("id")
 
@@ -188,8 +184,7 @@ def run(rules_dir: Path, strict: bool = False) -> int:
         print(f.fmt())
 
     summary = (
-        f"\nlint: {len(rule_files)} rule(s), "
-        f"{len(errors)} error(s), {len(warnings)} warning(s)"
+        f"\nlint: {len(rule_files)} rule(s), {len(errors)} error(s), {len(warnings)} warning(s)"
     )
     print(summary)
     return 0 if not errors else 1

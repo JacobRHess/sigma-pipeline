@@ -2,6 +2,7 @@
 so a regression in those small functions trips CI even before fixture-level
 behavior is exercised.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -43,7 +44,7 @@ def test_attack_tag_validator():
     assert _is_valid_attack_tag("attack.credential_access")
     assert not _is_valid_attack_tag("attack.")
     assert not _is_valid_attack_tag("attack.T1059.0001")  # 4 sub-digits, malformed
-    assert not _is_valid_attack_tag("attack.123")        # tactic must start with letter
+    assert not _is_valid_attack_tag("attack.123")  # tactic must start with letter
 
 
 def test_lint_rule_clean(tmp_path: Path):
@@ -79,9 +80,9 @@ def test_lint_rule_malformed_tag(tmp_path: Path):
 @pytest.mark.parametrize(
     "broken_condition",
     [
-        "selection and",        # dangling operator
-        "(selection or",        # unbalanced parens
-        "selection unknown_op", # bare unknown trailing token
+        "selection and",  # dangling operator
+        "(selection or",  # unbalanced parens
+        "selection unknown_op",  # bare unknown trailing token
     ],
 )
 def test_lint_rule_bad_condition(tmp_path: Path, broken_condition: str):
