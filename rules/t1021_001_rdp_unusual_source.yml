@@ -1,0 +1,27 @@
+title: RDP Connection from Non-Internal Source
+id: t1021_001_rdp_unusual_source
+status: experimental
+description: >
+  Detects inbound RDP (TCP/3389) connections whose source IP is outside
+  RFC1918 / loopback ranges. Lateral movement over RDP from a non-internal
+  origin is a strong signal of either an exposed jump host being abused or
+  a compromised VPN endpoint pivoting deeper into the network.
+author: Jacob Hess
+date: 2026-04-30
+level: high
+logsource:
+  category: network_connection
+  product: windows
+detection:
+  selection_rdp:
+    DestinationPort: 3389
+    Initiated: false
+  selection_internal_source:
+    SourceIp|re: '^(10\.|127\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[01])\.)'
+  condition: selection_rdp and not selection_internal_source
+tags:
+  - attack.lateral_movement
+  - attack.t1021.001
+falsepositives:
+  - Legitimate remote admin from a VPN concentrator that NATs to a public
+    IP; tune by allowlisting known jump-host source addresses.

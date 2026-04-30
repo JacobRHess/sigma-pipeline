@@ -1,0 +1,10 @@
+{
+  "EventID": 3,
+  "Image": "C:\\Windows\\System32\\mstsc.exe",
+  "DestinationPort": 3389,
+  "Initiated": true,
+  "SourceIp": "10.4.2.15",
+  "DestinationIp": "203.0.113.50",
+  "User": "CORP\\sysadmin",
+  "_time": "2026-04-30T08:30:00Z"
+}

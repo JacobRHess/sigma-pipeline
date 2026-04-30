@@ -1,0 +1,30 @@
+title: Local Account Discovery via net.exe
+id: t1087_001_local_account_discovery
+status: stable
+description: >
+  Detects enumeration of local users and groups via net.exe / net1.exe.
+  Frequently used by operators after initial access to map valid usernames
+  and group memberships before privilege escalation or lateral movement.
+author: Jacob Hess
+date: 2026-04-30
+level: medium
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_image:
+    Image|endswith:
+      - '\net.exe'
+      - '\net1.exe'
+  selection_args:
+    CommandLine|contains:
+      - ' user'
+      - ' localgroup'
+      - ' accounts'
+  condition: selection_image and selection_args
+tags:
+  - attack.discovery
+  - attack.t1087.001
+falsepositives:
+  - Login scripts that call 'net user /domain' for group-membership checks;
+    tune by parent process or execution host.
