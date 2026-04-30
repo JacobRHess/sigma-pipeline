@@ -24,10 +24,24 @@
       "enabled": true
     },
     {
+      "techniqueID": "T1021.001",
+      "score": 4,
+      "color": "#2c6cff",
+      "comment": "RDP Connection from Non-Internal Source (high)",
+      "enabled": true
+    },
+    {
       "techniqueID": "T1059.001",
       "score": 4,
       "color": "#2c6cff",
       "comment": "PowerShell Encoded Command Execution (high)",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1087.001",
+      "score": 3,
+      "color": "#558bff",
+      "comment": "Local Account Discovery via net.exe (medium)",
       "enabled": true
     },
     {

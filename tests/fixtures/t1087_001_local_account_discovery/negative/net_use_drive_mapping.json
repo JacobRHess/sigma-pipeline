@@ -1,0 +1,18 @@
+[
+  {
+    "EventID": 1,
+    "Image": "C:\\Windows\\System32\\net.exe",
+    "CommandLine": "net.exe use Z: \\\\fileserver\\share /persistent:no",
+    "ParentImage": "C:\\Windows\\System32\\cmd.exe",
+    "User": "CORP\\victim",
+    "_time": "2026-04-30T10:05:00Z"
+  },
+  {
+    "EventID": 1,
+    "Image": "C:\\Windows\\System32\\net.exe",
+    "CommandLine": "net.exe view \\\\fileserver",
+    "ParentImage": "C:\\Windows\\System32\\cmd.exe",
+    "User": "CORP\\victim",
+    "_time": "2026-04-30T10:05:30Z"
+  }
+]

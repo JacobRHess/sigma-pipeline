@@ -1,0 +1,10 @@
+{
+  "EventID": 3,
+  "Image": "C:\\Windows\\System32\\svchost.exe",
+  "DestinationPort": 3389,
+  "Initiated": false,
+  "SourceIp": "198.51.100.7",
+  "DestinationIp": "10.4.2.20",
+  "User": "CORP\\admin",
+  "_time": "2026-04-30T09:22:05Z"
+}

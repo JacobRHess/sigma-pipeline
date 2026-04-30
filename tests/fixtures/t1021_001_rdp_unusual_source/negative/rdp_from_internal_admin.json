@@ -1,0 +1,32 @@
+[
+  {
+    "EventID": 3,
+    "Image": "C:\\Windows\\System32\\svchost.exe",
+    "DestinationPort": 3389,
+    "Initiated": false,
+    "SourceIp": "10.4.99.5",
+    "DestinationIp": "10.4.2.15",
+    "User": "CORP\\sysadmin",
+    "_time": "2026-04-30T08:00:00Z"
+  },
+  {
+    "EventID": 3,
+    "Image": "C:\\Windows\\System32\\svchost.exe",
+    "DestinationPort": 3389,
+    "Initiated": false,
+    "SourceIp": "192.168.10.20",
+    "DestinationIp": "10.4.2.15",
+    "User": "CORP\\sysadmin",
+    "_time": "2026-04-30T08:01:00Z"
+  },
+  {
+    "EventID": 3,
+    "Image": "C:\\Windows\\System32\\svchost.exe",
+    "DestinationPort": 3389,
+    "Initiated": false,
+    "SourceIp": "172.16.5.10",
+    "DestinationIp": "10.4.2.15",
+    "User": "CORP\\sysadmin",
+    "_time": "2026-04-30T08:02:00Z"
+  }
+]
