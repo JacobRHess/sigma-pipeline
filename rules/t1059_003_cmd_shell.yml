@@ -1,0 +1,36 @@
+title: Suspicious cmd.exe One-liner Execution
+id: t1059_003_cmd_shell
+status: stable
+description: >
+  Detects cmd.exe invocations that combine staging and execution in a
+  single line — chained operators (&, &&, |) plus typical attacker
+  utilities (powershell, curl, certutil, bitsadmin, vssadmin).
+author: Jacob Hess
+date: 2026-04-25
+level: medium
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_image:
+    Image|endswith:
+      - '\cmd.exe'
+  selection_chained:
+    CommandLine|contains:
+      - '&&'
+      - '|'
+      - ' & '
+  selection_payload:
+    CommandLine|contains:
+      - 'powershell'
+      - 'curl '
+      - 'certutil'
+      - 'bitsadmin'
+      - 'vssadmin'
+      - 'wmic'
+  condition: selection_image and selection_chained and selection_payload
+tags:
+  - attack.execution
+  - attack.t1059.003
+falsepositives:
+  - Admin batch scripts that legitimately chain helper utilities; allowlist by hash.

@@ -7,7 +7,7 @@ description: >
   invocations with suspicious paths.
 author: Jacob Hess
 date: 2026-04-25
-level: high
+level: critical
 logsource:
   category: process_creation
   product: windows
