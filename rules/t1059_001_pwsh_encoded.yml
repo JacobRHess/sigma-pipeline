@@ -17,9 +17,9 @@ detection:
       - '\pwsh.exe'
   selection_args:
     CommandLine|contains:
-      - ' -enc '
-      - ' -EncodedCommand '
-      - ' -e '
+      - ' --enc '
+      - ' --EncodedCommand '
+      - ' --e '
   condition: selection_image and selection_args
 tags:
   - attack.execution
